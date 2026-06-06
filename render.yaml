@@ -12,6 +12,9 @@ services:
         value: public
       - key: PGRST_DB_ANON_ROLE
         value: web_anon
+      - key: PORT
+        value: "10000"
+        sync: false
     autoDeployTrigger: commit
-    healthCheckPath: /
+    healthCheckPath: /health_check?id=eq.1
     healthCheckIntervalSeconds: 30

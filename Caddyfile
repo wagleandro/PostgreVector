@@ -1,8 +1,8 @@
 :80 {
-  reverse_proxy postgrest:3000
+  reverse_proxy postgrest_api:10000
 }
 
 :443 {
   tls internal
-  reverse_proxy postgrest:3000
+  reverse_proxy postgrest_api:10000
 }

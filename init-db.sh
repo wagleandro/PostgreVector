@@ -36,4 +36,4 @@ else
 fi
 
 echo "Starting PostgREST on port $PGRST_SERVER_PORT..."
-exec postgrest /etc/postgrest.conf --db-uri "${PGRST_DB_URI:-postgresql://localhost/appdb}" --server-port "$PGRST_SERVER_PORT"
+exec postgrest /etc/postgrest.conf

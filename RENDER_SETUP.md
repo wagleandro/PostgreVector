@@ -82,15 +82,17 @@ Once deployed:
 
 ## Local Development
 
-For local testing with docker-compose:
+For local testing with docker compose:
 
 ```bash
-docker-compose up
+docker compose up --build
 ```
 
 This will start:
-- PostgreSQL on `localhost:5432`
-- PostgREST on `localhost:3000`
+- PostgreSQL on `localhost:5432` using `Dockerfile.postgres` with `pgvector`
+- PostgREST on `localhost:10000` inside the service
 - Caddy reverse proxy on `localhost:80`
 
 Access the API at: http://localhost
+
+For Render, the web service builds from `Dockerfile` and exposes PostgREST on port `10000`.
