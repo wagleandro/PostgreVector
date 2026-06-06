@@ -11,4 +11,9 @@ if [ -n "${PGRST_DB_URI:-}" ] && [ -f /etc/postgrest/init-db.sql ]; then
   done
 fi
 
-exec postgrest /etc/postgrest.conf
+if [ -z "${PGRST_DB_URI:-}" ]; then
+  echo "ERROR: PGRST_DB_URI environment variable not set"
+  exit 1
+fi
+
+exec postgrest /etc/postgrest.conf --db-uri "$PGRST_DB_URI" --server-port "$PGRST_SERVER_PORT"
