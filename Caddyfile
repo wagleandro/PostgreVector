@@ -1,0 +1,8 @@
+:80 {
+  reverse_proxy postgrest:3000
+}
+
+:443 {
+  tls internal
+  reverse_proxy postgrest:3000
+}

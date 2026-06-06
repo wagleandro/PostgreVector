@@ -1,0 +1,29 @@
+services:
+  - type: web_service
+    name: postgrest-api
+    env: docker
+    plan: starter
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: PGRST_DB_URI
+        fromDatabase:
+          databaseName: postgres-db
+          property: connectionString
+      - key: PGRST_DB_SCHEMA
+        value: public
+      - key: PGRST_DB_ANON_ROLE
+        value: web_anon
+      - key: PGRST_SERVER_PORT
+        value: "10000"
+    autoDeploy: true
+    healthCheckPath: /
+    healthCheckIntervalSeconds: 10
+
+databases:
+  - name: postgres-db
+    plan: starter
+    databaseName: appdb
+    postgresVersion: "15"
+    region: oregon
+    extensions:
+      - pgvector
