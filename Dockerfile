@@ -3,9 +3,9 @@ FROM alpine:3.22
 RUN apk add --no-cache ca-certificates curl postgresql-client tar xz \
   && mkdir -p /etc/postgrest
 
-ARG POSTGREST_VERSION=14.13.0
+ARG POSTGREST_VERSION=14.13
 RUN curl -L -o /tmp/postgrest.tar.xz \
-  "https://github.com/PostgREST/postgrest/releases/download/v${POSTGREST_VERSION}/postgrest-${POSTGREST_VERSION}-linux-static.tar.xz" \
+  "https://github.com/PostgREST/postgrest/releases/download/v${POSTGREST_VERSION}/postgrest-v${POSTGREST_VERSION}-linux-static-x86-64.tar.xz" \
   && tar -xJf /tmp/postgrest.tar.xz -C /usr/local/bin \
   && chmod +x /usr/local/bin/postgrest \
   && rm -rf /var/cache/apk/* /tmp/postgrest.tar.xz
