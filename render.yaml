@@ -15,7 +15,7 @@ services:
         value: web_anon
     autoDeployTrigger: commit
     healthCheckPath: /
-    healthCheckIntervalSeconds: 10
+    healthCheckIntervalSeconds: 30
 
 databases:
   - name: postgres-db
