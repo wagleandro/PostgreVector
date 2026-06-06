@@ -38,7 +38,3 @@ ON CONFLICT (id) DO UPDATE
 
 -- Certifique-se de que a extensão pgvector existe (se ainda não existir).
 CREATE EXTENSION IF NOT EXISTS pgvector WITH SCHEMA public;
-
-
-
-
