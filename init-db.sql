@@ -12,6 +12,8 @@ BEGIN
 END
 $$;
 
+
+
 -- Garante o uso do schema público.
 GRANT USAGE ON SCHEMA public TO web_anon;
 
