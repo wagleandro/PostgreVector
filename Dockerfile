@@ -17,3 +17,6 @@ RUN chmod +x /usr/local/bin/init-db.sh
 
 EXPOSE 10000
 CMD ["/usr/local/bin/init-db.sh"]
+
+
+
