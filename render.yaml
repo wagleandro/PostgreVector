@@ -6,8 +6,8 @@ services:
     dockerfilePath: Dockerfile
     envVars:
       - key: PGRST_DB_URI
-        fromDatabase:
-          name: postgres-db
+        value: postgresql://user:password@host:5432/appdb
+        sync: false
       - key: PGRST_DB_SCHEMAS
         value: public
       - key: PGRST_DB_ANON_ROLE
@@ -15,12 +15,3 @@ services:
     autoDeployTrigger: commit
     healthCheckPath: /
     healthCheckIntervalSeconds: 30
-
-databases:
-  - name: postgres-db
-    plan: starter
-    databaseName: appdb
-    postgresVersion: "15"
-    region: oregon
-    extensions:
-      - pgvector

@@ -1,52 +1,39 @@
 #!/bin/sh
 set -e
 
-echo "=== Checking for database connection variables ==="
-env | grep -i 'database\|postgres\|pgrst\|sql' | sort || echo "No database-related vars"
-echo "=================================================="
+echo "=== PostgREST Startup ==="
+echo "Server port: ${PORT:-10000}"
 
 export PGRST_SERVER_PORT="${PGRST_SERVER_PORT:-${PORT:-10000}}"
-echo "Server port set to: $PGRST_SERVER_PORT"
 
-# Wait for database URI to be available
-RETRY_COUNT=0
-MAX_RETRIES=30
-DB_URI=""
-
-while [ -z "$DB_URI" ] && [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-  # Try multiple possible variable names that Render might use
-  DB_URI="${PGRST_DB_URI:-${DATABASE_URL:-${POSTGRES_URL:-${RENDER_DATABASE_URL:-}}}}"
-  
-  if [ -z "$DB_URI" ]; then
-    echo "Attempt $((RETRY_COUNT + 1))/$MAX_RETRIES: Waiting for database URI..."
-    sleep 2
-    RETRY_COUNT=$((RETRY_COUNT + 1))
-  fi
-done
-
-if [ -z "$DB_URI" ]; then
-  echo "ERROR: Database URI not found in any expected variable:"
-  echo "  - PGRST_DB_URI"
-  echo "  - DATABASE_URL"
-  echo "  - POSTGRES_URL"
-  echo "  - RENDER_DATABASE_URL"
+# Check if database URI is configured
+if [ -z "${PGRST_DB_URI:-}" ]; then
   echo ""
-  echo "All environment variables:"
-  env | sort
-  exit 1
+  echo "⚠️  WARNING: PGRST_DB_URI not configured!"
+  echo ""
+  echo "This service requires a PostgreSQL database to function."
+  echo "To set it up:"
+  echo ""
+  echo "1. Create a PostgreSQL database in Render"
+  echo "2. Copy the connection string (postgresql://...)"
+  echo "3. Add PGRST_DB_URI environment variable to this web service"
+  echo "4. Restart the service"
+  echo ""
+  echo "For now, PostgREST will start but won't be able to serve requests."
+  echo ""
+else
+  echo "Database URI configured: $(echo $PGRST_DB_URI | sed 's/:\/\/[^@]*@/:\/\/*****@/')"
+  
+  # Try to initialize database schema if configured
+  if [ -f /etc/postgrest/init-db.sql ]; then
+    echo "Attempting to run initialization script..."
+    if psql "$PGRST_DB_URI" -v ON_ERROR_STOP=1 -f /etc/postgrest/init-db.sql 2>/dev/null; then
+      echo "Database initialized successfully"
+    else
+      echo "Database initialization failed (will retry when service is restarted)"
+    fi
+  fi
 fi
 
-export PGRST_DB_URI="$DB_URI"
-echo "Database URI configured (password masked): $(echo $DB_URI | sed 's/:\/\/[^@]*@/:\/\/*****@/')"
-
-if [ -f /etc/postgrest/init-db.sql ]; then
-  echo "Running database initialization..."
-  until psql "$PGRST_DB_URI" -v ON_ERROR_STOP=1 -f /etc/postgrest/init-db.sql; do
-    echo "Database connection failed, retrying in 3 seconds..."
-    sleep 3
-  done
-  echo "Database initialized successfully"
-fi
-
-echo "Starting PostgREST server..."
-exec postgrest /etc/postgrest.conf --db-uri "$PGRST_DB_URI" --server-port "$PGRST_SERVER_PORT"
+echo "Starting PostgREST on port $PGRST_SERVER_PORT..."
+exec postgrest /etc/postgrest.conf --db-uri "${PGRST_DB_URI:-postgresql://localhost/appdb}" --server-port "$PGRST_SERVER_PORT"
